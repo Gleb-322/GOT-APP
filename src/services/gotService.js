@@ -10,51 +10,67 @@ export default class GotService {
         }
         return await result.json()
     }
-    getAllCharacters() {
-        return this.GetResource('/characters?page=5&pageSize=10')
+    async getAllCharacters() {
+        const res = await this.GetResource('/characters?page=5&pageSize=10')
+        return res.map(this._transformCharacter)
     }
-    getCharacter(id) {
-        return this.GetResource(`/characters/${id}`)
+    async getCharacter(id) {
+        const char = await this.GetResource(`/characters/${id}`)
+
+        const keys = Object.keys(char)
+        keys.forEach(key => {
+            if (char[key] === '') {
+                char[key] = 'No Data'
+            }
+        })
+
+        return this._transformCharacter(char)
     }
-    getAllBooks() {
-        return this.GetResource('/books/')
+    async getAllBooks() {
+        const res = await this.GetResource('/books/')
+        return res.map(this._transformBook)
     }
-    getBook(id) {
-        return this.GetResource(`/books/${id}`)
+    async getBook(id) {
+        const book = await this.GetResource(`/books/${id}`)
+        return this._transformBook(book)
     }
-    getAllHouses() {
-        return this.GetResource('/houses/')
+    async getAllHouses() {
+        const res = await this.GetResource('/houses/')
+        return res.map(this._transformHouse)
     }
-    getHouse(id) {
-        return this.GetResource(`/houses/${id}`)
+    async getHouse(id) {
+        const house = await this.GetResource(`/houses/${id}`)
+        return this._transformHouse(house)
+    }
+
+    _transformCharacter(char) {
+        return {
+            name: char.name,
+            gender: char.gender,
+            born: char.born,
+            died: char.died,
+            culture: char.culture
+        }
+    }
+
+    _transformBook(book) {
+        return {
+            name: book.name,
+            numberOfPages: book.numberOfPages,
+            publisher: book.publisher,
+            released: book.released
+        }
+    }
+
+
+    _transformHouse(house) {
+        return {
+            name: house.name,
+            region: house.region,
+            words: house.words,
+            titles: house.titles,
+            overlord: house.overlord,
+            ancestralWeapons: house.ancestralWeapons
+        }
     }
 }
-
-
-const got = new GotService()
-
-got.getAllCharacters()
-    .then(res => {
-        res.forEach((item) => console.log(item.name))
-    })
-
-got.getCharacter(130)
-    .then(result => console.log(result))
-
-
-got.getAllBooks()
-    .then(res => {
-        res.forEach((item) => console.log(item.name))
-    })
-
-got.getBook(3)
-    .then(result => console.log(result))
-
-
-got.getAllHouses()
-    .then(res => {
-        res.forEach((item) => console.log(item.name))
-    })
-
-got.getHouse(13)
-    .then(result => console.log(result))
