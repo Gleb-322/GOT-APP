@@ -2,6 +2,8 @@ import React, {Component} from 'react'
 import { ListGroup, ListGroupItem } from 'reactstrap'
 import GotService from '../../services/gotService'
 import styled from 'styled-components'
+import ErrorMessage from '../errorMessage'
+import Spinner from '../spinner'
 
 
 const CharacterDetails = styled.div`
@@ -28,7 +30,9 @@ export default class CharDetails extends Component {
     GotService = new GotService()
 
     state = {
-        char: null
+        char: null,
+        error: false,
+        loading: true
     }
 
     componentDidMount() {
@@ -41,6 +45,20 @@ export default class CharDetails extends Component {
         }
     }
 
+    onError = () => {
+        this.setState({
+            char: null,
+            error: true
+        })
+    }
+
+    onLoaded = (char) => {
+        this.setState({
+            char,
+            loading: false
+        })
+    }
+
     updateChar() {
         const {charId} = this.props
 
@@ -50,19 +68,33 @@ export default class CharDetails extends Component {
 
         this.GotService.getCharacter(charId)
         .then((char) => {
-            this.setState({char})
+            this.onLoaded(char)
+        })
+        .catch(() => {
+            this.onError()
         })
 
-        this.foo.bar = 0
+        
     }
 
     render() {
-        if (!this.state.char) {
+        const {loading, error, char} = this.state
+        
+        if (error && !char) {
+            return <ErrorMessage/>
+        } else if (!char) {
             return (
                 <SelectError>Please select a Character</SelectError>
-            )    
+            )
+        } else if (loading) {
+            return (
+                <CharacterDetails className="rounded">
+                    <Spinner/>
+                </CharacterDetails>
+            )
         }
-        const {name, gender, born, died, culture} = this.state.char
+
+        const {name, gender, born, died, culture} = char
 
         return (
             <CharacterDetails className="rounded">

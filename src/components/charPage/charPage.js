@@ -16,7 +16,7 @@ export default class CharacterPage extends Component {
             selectedChar: id
         })
     }
-
+    
     componentDidCatch() {
         this.setState({
             error: true
