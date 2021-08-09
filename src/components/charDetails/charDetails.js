@@ -26,6 +26,16 @@ const Term = styled.span`
 `
 
 
+const Field = ({char, field, label}) => {
+    return (
+        <ListGroupItem className="d-flex justify-content-between">
+            <Term>{label}</Term>
+            <span>{char[field]}</span>
+        </ListGroupItem>
+    )
+}
+export {Field}
+
 export default class CharDetails extends Component {
     GotService = new GotService()
 
@@ -94,28 +104,17 @@ export default class CharDetails extends Component {
             )
         }
 
-        const {name, gender, born, died, culture} = char
+        const {name} = char
 
         return (
             <CharacterDetails className="rounded">
                 <h4>{name}</h4>
                 <ListGroup className="list-group-flush">
-                    <ListGroupItem className="d-flex justify-content-between">
-                        <Term>Gender</Term>
-                        <span>{gender}</span>
-                    </ListGroupItem>
-                    <ListGroupItem className="d-flex justify-content-between">
-                        <Term>Born</Term>
-                        <span>{born}</span>
-                    </ListGroupItem>
-                    <ListGroupItem className="d-flex justify-content-between">
-                        <Term>Died</Term>
-                        <span>{died}</span>
-                    </ListGroupItem>
-                    <ListGroupItem className="d-flex justify-content-between">
-                        <Term>Culture</Term>
-                        <span>{culture}</span>
-                    </ListGroupItem>
+                    {
+                        React.Children.map(this.props.children, (child) => {
+                            return React.cloneElement(child, {char})
+                        })
+                    }
                 </ListGroup>
             </CharacterDetails>
         )

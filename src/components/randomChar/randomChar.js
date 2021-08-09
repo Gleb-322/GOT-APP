@@ -60,7 +60,7 @@ export default class RandomChar extends Component {
         const id = Math.floor(Math.random()*140 + 25) /* дипазон от 25 до 140 */
         this.GotService.getCharacter(id)   
         .then(this.onCharLoaded) 
-        .catch(this.onError)
+        // .catch(this.onError)
     }
 
     render() {

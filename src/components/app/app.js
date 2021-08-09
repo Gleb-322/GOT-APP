@@ -2,9 +2,12 @@ import React, { Component } from 'react'
 import {Col, Row, Container } from 'reactstrap'
 import Header from '../header'
 import RandomChar from '../randomChar'
-import CharacterPage from '../charPage';
+import CharacterPage from '../charPage'
 import ErrorMessage from '../errorMessage'
-import styled from 'styled-components';
+import GotService from '../../services/gotService'
+import ItemList from '../itemList'
+import CharDetails from '../charDetails'
+import styled from 'styled-components'
 
 const Button = styled.button`
     margin-bottom: 40px;
@@ -19,6 +22,7 @@ const Button = styled.button`
 
 
 export default class App extends Component {
+    GotService = new GotService()
 
     state = {
         showRandomChar: true,
@@ -61,6 +65,30 @@ export default class App extends Component {
                         </Col>
                     </Row>
                     <CharacterPage/>
+                    <Row>
+                        <Col md='6'>
+                            <ItemList 
+                                onItemSelected={this.onItemSelected}
+                                gotData={this.GotService.getAllBooks}
+                                renderItem={(item) => item.name}
+                            />
+                        </Col>
+                        <Col md='6'>
+                            <CharDetails charId = {this.state.selectedChar} />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md='6'>
+                            <ItemList 
+                                onItemSelected={this.onItemSelected}
+                                gotData={this.GotService.getAllHouses}
+                                renderItem={(item) => item.name}
+                            />
+                        </Col>
+                        <Col md='6'>
+                            <CharDetails charId = {this.state.selectedChar} />
+                        </Col>
+                    </Row>
                 </Container>
             </>
         )

@@ -3,42 +3,44 @@ export default class GotService {
         this._apiBase = 'https://www.anapioficeandfire.com/api'
     }
 
-    async GetResource(url) {
+    getResource = async (url) => {
         const result = await fetch(`${this._apiBase}${url}`)
 
         if (!result.ok) {
             throw new Error(`Could not fetch ${url}` +
-              `, received ${result.status}`);
-          }
+            `, received ${result.status}`)
+        }
+
+        return await result.json()
     }
 
-    async getAllCharacters() {
-        const res = await this.GetResource(`/characters?page=5&pageSize=10`)
+    getAllCharacters = async () => {
+        const res = await this.getResource(`/characters?page=5&pageSize=10`)
         return res.map(this._transformCharacter)
     }
 
-    async getCharacter(id) {
-        const char = await this.GetResource(`/characters/${id}`)
+    getCharacter = async (id) => {
+        const char = await this.getResource(`/characters/${id}`)
         return this._transformCharacter(char)
     }
 
-    async getAllBooks() {
-        const res = await this.GetResource(`/books/`)
+    getAllBooks = async () => {
+        const res = await this.getResource(`/books/`)
         return res.map(this._transformBook)
     }
 
-    async getBook(id) {
-        const book = await this.GetResource(`/books/${id}/`)
+    getBook = async (id) => {
+        const book = await this.getResource(`/books/${id}/`)
         return this._transformBook(book)
     }
 
-    async getAllHouses() {
-        const res = await this.GetResource(`/houses/`)
+    getAllHouses = async () => {
+        const res = await this.getResource(`/houses/`)
         return res.map(this._transformHouse)
     }
 
-    async getHouse(id) {
-        const house = await this.GetResource(`/houses/${id}/`)
+    getHouse = async (id) => {
+        const house = await this.getResource(`/houses/${id}/`)
         return this._transformHouse(house)
     }
 
