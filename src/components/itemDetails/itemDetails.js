@@ -1,12 +1,11 @@
 import React, {Component} from 'react'
 import { ListGroup, ListGroupItem } from 'reactstrap'
-import GotService from '../../services/gotService'
 import styled from 'styled-components'
 import ErrorMessage from '../errorMessage'
 import Spinner from '../spinner'
 
 
-const CharacterDetails = styled.div`
+const ItemDetail = styled.div`
     background-color: #fff;
     padding: 25px 25px 15px 25px;
     margin-bottom: 40px;
@@ -26,59 +25,58 @@ const Term = styled.span`
 `
 
 
-const Field = ({char, field, label}) => {
+const Field = ({items, field, label}) => {
     return (
         <ListGroupItem className="d-flex justify-content-between">
             <Term>{label}</Term>
-            <span>{char[field]}</span>
+            <span>{items[field]}</span>
         </ListGroupItem>
     )
 }
 export {Field}
 
-export default class CharDetails extends Component {
-    GotService = new GotService()
+export default class ItemDetails extends Component {
 
     state = {
-        char: null,
+        items: null,
         error: false,
         loading: true
     }
 
     componentDidMount() {
-        this.updateChar()
+        this.updateItem()
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.charId !== prevProps.charId) {
-            this.updateChar()
+        if (this.props.itemId !== prevProps.itemId) {
+            this.updateItem()
         }
     }
 
     onError = () => {
         this.setState({
-            char: null,
+            items: null,
             error: true
         })
     }
 
-    onLoaded = (char) => {
+    onItemLoaded = (items) => {
         this.setState({
-            char,
+            items,
             loading: false
         })
     }
 
-    updateChar() {
-        const {charId} = this.props
+    updateItem() {
+        const {itemId, gotData} = this.props
 
-        if (!charId) {
+        if (!itemId) {
             return
         }
 
-        this.GotService.getCharacter(charId)
-        .then((char) => {
-            this.onLoaded(char)
+        gotData(itemId)
+        .then((items) => {
+            this.onItemLoaded(items)
         })
         .catch(() => {
             this.onError()
@@ -88,35 +86,35 @@ export default class CharDetails extends Component {
     }
 
     render() {
-        const {loading, error, char} = this.state
+        const {loading, error, items} = this.state
         
-        if (error && !char) {
+        if (error && !items) {
             return <ErrorMessage/>
-        } else if (!char) {
+        } else if (!items) {
             return (
-                <SelectError>Please select a Character</SelectError>
+                <SelectError>Please select a Item in the list</SelectError>
             )
         } else if (loading) {
             return (
-                <CharacterDetails className="rounded">
+                <ItemDetail className="rounded">
                     <Spinner/>
-                </CharacterDetails>
+                </ItemDetail>
             )
         }
 
-        const {name} = char
+        const {name} = items
 
         return (
-            <CharacterDetails className="rounded">
+            <ItemDetail className="rounded">
                 <h4>{name}</h4>
                 <ListGroup className="list-group-flush">
                     {
                         React.Children.map(this.props.children, (child) => {
-                            return React.cloneElement(child, {char})
+                            return React.cloneElement(child, {items})
                         })
                     }
                 </ListGroup>
-            </CharacterDetails>
+            </ItemDetail>
         )
     }
 }

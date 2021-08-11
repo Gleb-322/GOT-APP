@@ -1,31 +1,20 @@
 import React, { Component } from 'react'
-import {Col, Row, Container } from 'reactstrap'
+import { Container } from 'reactstrap'
 import Header from '../header'
 import RandomChar from '../randomChar'
-import CharacterPage from '../charPage'
+import {CharacterPage, BooksPage, HousesPage, BooksItem} from '../pages'
 import ErrorMessage from '../errorMessage'
 import GotService from '../../services/gotService'
-import ItemList from '../itemList'
-import CharDetails from '../charDetails'
-import styled from 'styled-components'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
+import './app.css'
 
-const Button = styled.button`
-    margin-bottom: 40px;
-    background-color: lightblue;
-    height: 40px;
-    width: 60%;
-    border: solid 1px #fff;
-    border-radius: 5px;
-    outline: none;
-    padding: 7px;
-`
+
 
 
 export default class App extends Component {
     GotService = new GotService()
 
     state = {
-        showRandomChar: true,
         error: false
     }
 
@@ -35,62 +24,33 @@ export default class App extends Component {
         })
     }
 
-    onToggleRandomChar = () => {
-        this.setState(state => {
-            return {
-                showRandomChar: !state.showRandomChar
-            }
-        })
-    }
-
 
     render() {
         if (this.state.error) {
             return <ErrorMessage/>
         }
-        const char = this.state.showRandomChar ? <RandomChar/> : null
+        
         return (
-            <> 
-                <Container>
-                    <Header />
-                </Container>
-                <Container>
-                    <Row>
-                        <Col lg={{size: 5, offset: 0}}>
-                            {char}
-                            <Button
-                                onClick={this.onToggleRandomChar}>
-                                Toggle random Character
-                            </Button>
-                        </Col>
-                    </Row>
-                    <CharacterPage/>
-                    <Row>
-                        <Col md='6'>
-                            <ItemList 
-                                onItemSelected={this.onItemSelected}
-                                gotData={this.GotService.getAllBooks}
-                                renderItem={(item) => item.name}
-                            />
-                        </Col>
-                        <Col md='6'>
-                            <CharDetails charId = {this.state.selectedChar} />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col md='6'>
-                            <ItemList 
-                                onItemSelected={this.onItemSelected}
-                                gotData={this.GotService.getAllHouses}
-                                renderItem={(item) => item.name}
-                            />
-                        </Col>
-                        <Col md='6'>
-                            <CharDetails charId = {this.state.selectedChar} />
-                        </Col>
-                    </Row>
-                </Container>
-            </>
+            <Router>
+                <div className='app'>
+                    <Container>
+                        <Header />
+                    </Container>
+                    <Container>
+                        <Route path='/' exact component={() => <h1 className='title'>Welcome to the best web Application for universe <br/> The Game Of Thrones</h1>} />
+                        <Route path='/randomChar' component={RandomChar}/>
+                        <Route path='/characters' component={CharacterPage}/>
+                        <Route path='/houses' component={HousesPage}/>
+                        <Route path='/books' exact component={BooksPage}/>
+                        <Route path='/books/:id' render={
+                                ({match}) => {
+                                    const {id} = match.params
+                                    return <BooksItem bookId={id}/>
+                                }
+                            }/>
+                    </Container>
+                </div>
+            </Router>
         )
     }
 }

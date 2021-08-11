@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
-import { ListGroup, ListGroupItem } from 'reactstrap';
+import {Col, Row, ListGroup, ListGroupItem } from 'reactstrap';
 import styled from 'styled-components';
 import GotService from '../../services/gotService';
 import Spinner from '../spinner';
 import ErrorMessage from '../errorMessage'
+import PropTypes from 'prop-types'
 
 const RandomBlock = styled.div`
     background-color: #fff;
@@ -21,7 +22,18 @@ const RandomBlock = styled.div`
 const Term = styled.span`
     font-weight: bold;
 `
-
+const Button = styled.button`
+    display: block;
+    margin: 0 auto;
+    margin-top: 40px;
+    background-color: lightblue;
+    height: 40px;
+    width: 50%;
+    border: solid 1px #fff;
+    border-radius: 5px;
+    outline: none;
+    padding: 7px;
+`
 
 export default class RandomChar extends Component {
 
@@ -30,12 +42,13 @@ export default class RandomChar extends Component {
     state = {
         char: {},
         loading: true,
-        error: false
+        error: false,
+        showRandomChar: true
     }
 
     componentDidMount() {
         this.updateChar()
-        this.timerId = setInterval(this.updateChar, 1000)
+        this.timerId = setInterval(this.updateChar, this.props.interval)
     }
 
     componentWillUnmount() {
@@ -56,27 +69,76 @@ export default class RandomChar extends Component {
         })
     }
 
+    onToggleRandomChar = () => {
+        this.setState(state => {
+            return {
+                showRandomChar: !state.showRandomChar
+            }
+        })
+    }
+
     updateChar = () => {
         const id = Math.floor(Math.random()*140 + 25) /* дипазон от 25 до 140 */
         this.GotService.getCharacter(id)   
         .then(this.onCharLoaded) 
-        // .catch(this.onError)
+        .catch(this.onError)
     }
 
     render() {
-        const {char, loading, error} = this.state
+        const {char, loading, error, showRandomChar} = this.state
         const errorMessage = error ? <ErrorMessage/> : null
         const spinner = loading ? <Spinner/> : null
         const content = !(loading || error) ? <View char={char}/> : null
-        return (
-            <RandomBlock className="rounded"> 
-                {errorMessage}
-                {spinner}
-                {content}
-            </RandomBlock>
-        );
+        if (showRandomChar) {
+            return (
+                <Row>
+                    <Col lg={{size: 12, offset: 0}}>
+                        <RandomBlock className="rounded"> 
+                            {errorMessage}
+                            {spinner}
+                            {content}
+                        </RandomBlock>
+                        <Button
+                            onClick={this.onToggleRandomChar}>
+                            Toggle random Character
+                        </Button>
+                    </Col>
+                </Row>
+                
+            )
+        } else {
+            return (
+                <Row>
+                    <Col lg={{size: 12, offset: 0}}>
+                        <Button
+                            onClick={this.onToggleRandomChar}>
+                            Toggle random Character
+                        </Button>
+                    </Col>
+                </Row>
+            )
+        }
     }
 }
+
+RandomChar.defaultProps = {
+    interval: 1500
+}
+
+// RandomChar.propTypes = {
+//     interval: (props, propName, componentName) => {
+//         const value = props[propName]
+//         if (typeof value === 'number' && !isNaN(value)) {
+//             return null
+//         } 
+//         return new TypeError(`${componentName}: ${propName} must be a number`)
+//     }
+// }
+
+RandomChar.propTypes = {
+    interval: PropTypes.number
+}
+
 
 const View = ({char}) => {
     const {name, gender, born, died, culture} = char

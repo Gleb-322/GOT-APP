@@ -1,0 +1,12 @@
+.app {
+    background: url('got.jpeg') center center no-repeat;
+    background-size: cover;
+    height: 1000px;
+}
+.title {
+    color: #fff;
+    text-align: center;
+    margin-top: 60px;
+    line-height: 60px;
+}
+    
