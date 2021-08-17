@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import ItemList from '../itemList'
+import {ItemListChars} from '../itemList'
 import ItemDetails, {Field} from '../itemDetails'
 import ErrorMessage from '../errorMessage'
 import GotService from '../../services/gotService'
@@ -11,13 +11,13 @@ export default class CharacterPage extends Component {
     GotService = new GotService()
 
     state = {
-        selectedItem: 130,
+        selectedChar: null,
         error: false
     }
 
-    onItemSelected = (id) => {
+    onCharSelected = (id) => {
         this.setState({
-            selectedItem: id
+            selectedChar: id
         })
     }
     
@@ -36,7 +36,7 @@ export default class CharacterPage extends Component {
         const itemDetails = (
             <ItemDetails 
                 gotData={this.GotService.getCharacter}
-                itemId = {this.state.selectedItem}>
+                itemId = {this.state.selectedChar}>
                 <Field field='gender' label='Gender'/>
                 <Field field='born' label='Born' />
                 <Field field='died' label='Died' />
@@ -45,9 +45,8 @@ export default class CharacterPage extends Component {
         )
 
         const itemList = (
-            <ItemList 
-                onItemSelected={this.onItemSelected}
-                gotData={this.GotService.getAllCharacters}
+            <ItemListChars 
+                onItemSelected={this.onCharSelected}
                 renderItem={({name, gender}) => `${name} (${gender})`}
             />
         )
